@@ -1,0 +1,4 @@
+README
+
+Run the analyses from the makefiles.
+Run analyses for mother-father first, because this analyses downloads kinbank for both analyses. 

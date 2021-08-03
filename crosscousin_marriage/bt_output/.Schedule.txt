@@ -1,0 +1,3 @@
+Rate	83.33
+Tree Move	16.67
+Rate Tried	% Accepted	Tree Move Tried	% Accepted	Rates - Dev	Rates - Tried	Rates - Accepted	Sample Ave Acceptance	Total Ave Acceptance	

@@ -1,0 +1,50 @@
+Options:
+Model:                           Discrete: Dependent
+Tree File Name:                  ./data/bt_data/mXpreferred.bttrees
+Data File Name:                  ./data/bt_data/mXpreferred.btdata
+Log File Name:                   ./bt_output/.Log.txt
+Save Initial Trees:              False
+Save Trees:                      False
+Summary:                         False
+Seed:                            2871048421
+Precision:                       64 bits
+Cores:                           1
+Analysis Type:                   MCMC
+Sample Period:                   100
+Iterations:                      10000
+Burn in:                         10000
+MCMC ML Start:                   False
+Schedule File:                   ./bt_output/.Schedule.txt
+Rate Dev:                        AutoTune
+No of Rates:                     8
+Base frequency (PI's):           None
+Character Symbols:               00,01,10,11
+Using a covarion model:          False
+Normalise Q Matrix:              False
+Scale Tree:                      0.000001
+Restrictions:
+    q12                          None
+    q13                          None
+    q21                          None
+    q24                          None
+    q31                          None
+    q34                          None
+    q42                          None
+    q43                          None
+Prior Information:
+    Prior Categories:            100
+    Priors
+        q12 - exp 10.00 
+        q13 - exp 10.00 
+        q21 - exp 10.00 
+        q24 - exp 10.00 
+        q31 - exp 10.00 
+        q34 - exp 10.00 
+        q42 - exp 10.00 
+        q43 - exp 10.00 
+Tree Information
+     Trees:                      100
+     Taxa:                       85
+     Sites:                      1
+     States:                     4
+Iteration	Lh	Tree No	q12	q13	q21	q24	q31	q34	q42	q43	Root - P(0,0)	Root - P(0,1)	Root - P(1,0)	Root - P(1,1)	

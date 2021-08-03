@@ -1,0 +1,20 @@
+import sys
+
+o = open(sys.argv[-1])
+d = o.read()
+o.close()
+out = ""
+out += "("
+for l in d.split("\n")[:-1]:
+	if l.count(',')>0:
+		l = l.split("\t")[1]
+		l = l.replace(";",":60000,")
+		out += l
+	else:
+		l = l.split("\t")[1]
+		l = l.replace(";",":66000,")
+		out += l
+out = out[:-1] # get rid of last comma
+out += ");"
+
+print(out)
