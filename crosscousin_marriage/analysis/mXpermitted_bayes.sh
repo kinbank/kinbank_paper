@@ -15,6 +15,7 @@ HOME=$(pwd)
 BayesTraitsV3 $tree $data << ANSWERS
 2
 2
+Pis Emp
 ScaleTrees
 priorAll exp 10
 Stones 100 1000
@@ -29,6 +30,7 @@ ANSWERS
 BayesTraitsV3 $tree $data  << ANSWERS
 3
 2
+Pis Emp
 ScaleTrees
 priorAll exp 10
 Stones 100 1000
