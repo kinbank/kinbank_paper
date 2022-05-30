@@ -86,7 +86,7 @@ getGlottologTree <- function(glottoid, nodeLabelsBy="glottoid", langNodesToTips=
   if(substr(tx,nchar(tx),nchar(tx))!=";"){
     tx = paste(tx,";",sep='')
   }
-  phy<-phytools::read.newick(text=tx)
+  phy<-ape::read.tree(text=tx)
   phy$tip.label = editGlottologTipLabels(phy$tip.label,nodeLabelsBy)
   phy$node.label = editGlottologTipLabels(phy$node.label,nodeLabelsBy)
   

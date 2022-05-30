@@ -1,30 +1,40 @@
-library(dplyr)
-library(ape)
-library(phytools)
-library(phangorn)
-library(readxl)
-library(stringr)
-library(geiger)
+## This script creates a tree based on Glottolog 
 
-source('processing/getGlottologTree.R')
-
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ape)
+  library(phytools)
+  library(phangorn)
+  library(readxl)
+  library(stringr)
+  library(geiger)
+  
+  # custom functions
+  source('processing/getGlottologTree.R')
+})
+  
 ## -- Parameters -- ##
 years = 6000 # how old the LF trees should be
 
 # -- Data -- #
 mofa = read_xlsx('data/coded-data.xlsx', sheet = 1)
-glottolog = read.csv('~/OneDrive - University of Bristol/projects/dplace-data/csv/glottolog.csv')
+# Glottolog Family information
+glottolog = read.csv('https://raw.githubusercontent.com/glottolog/glottolog-cldf/master/cldf/languages.csv')
 
-languages = left_join(mofa, glottolog, by = c("Glottocode" = "id"))
+languages = left_join(mofa, glottolog, by = c("Glottocode" = "ID"))
 
 unq_languages = unique(languages$Glottocode)
 
-families = unique(languages$family_id)
+families = unique(languages$Family_ID)
 families = families[families != ""]
+
+dir.create("processed_data/glottocode_trees/", 
+           recursive = TRUE, 
+           showWarnings = FALSE)
 
 isolate = c()
 for(f in families){
-  print(f)
+  cat("Making glottolog tree for:", f, "\n")
   tre = getGlottologTree(f)
   
   all_keeps = c(unq_languages[unq_languages %in% tre$node.label],
@@ -33,6 +43,7 @@ for(f in families){
   save = FALSE
   # make nodes that I have into tips
   if(any(tre$node.label %in% unq_languages)){
+    cat("Make new tips for:\n")
     nodes = tre$node.label[tre$node.label %in% unq_languages]
     for(nod in nodes){
       print(nod)
@@ -54,7 +65,6 @@ for(f in families){
     isolate = c(isolate, all_keeps)
   }
   
-  
   if(save){
     if(length(tre$tip.label) == 1){
       tre$edge.length = years
@@ -67,7 +77,6 @@ for(f in families){
 }
 
 ## - Paste trees together -- ## 
-
 tree_list = list.files('processed_data/glottocode_trees/', full.names = TRUE)
 
 # build a tree from isolates
@@ -88,9 +97,4 @@ fileConn = file("processed_data/super_tree.nwk")
 close(fileConn)
 
 tree = read.tree('processed_data/super_tree.nwk')
-
-max(phytools::nodeHeights(tree))
-plot(tree$edge.length)
-A <- ape::vcv.phylo(tree)
-diag(A)
-any(is.na(A))
+s

@@ -1,7 +1,10 @@
-library(dplyr)
+suppressPackageStartupMessages({
+  library(dplyr)
+})
+
 
 forms = read.csv('../kinbank/kinbank/cldf/forms.csv')
-languages = read.csv('../kinbank/kinbank/kinbank/cldf/languages.csv')
+languages = read.csv('../kinbank/kinbank/cldf/languages.csv')
 
 forms = left_join(forms, languages, c("Language_ID" = "ID"))
 
@@ -13,9 +16,7 @@ mf = forms %>%
 mf$speaker = ifelse(substr(mf$Parameter_ID, 1, 1) == "f", "f", "m")
 mf$mf = substr(mf$Parameter_ID, 2, 2) # mother or father
 
-table(mf$Parameter_ID)
-
-length(unique(mf$Glottocode))
+cat("There are", length(unique(mf$Glottocode)), "languages in this sample.")
 
 # how many languages have sex of speaker distinctions in parents:
 gc = unique(mf$Glottocode)
@@ -26,6 +27,8 @@ for(i in 1:length(gc)){
   ss = mf %>% 
     filter(Glottocode == glottocode) # subset to one language
   
+  # for Mother and Father determine if there is a sex of speaker
+  # difference
   language = matrix(NA, ncol = 3, nrow = 2)
   for(j in 1:length(kintypes)){
     k = kintypes[j]
@@ -41,13 +44,16 @@ for(i in 1:length(gc)){
 }
 sos = as.data.frame(sos)
 colnames(sos) = c("Glottocode", "Kintype", "SoS")
-table((sos[,3]), sos[,2]) # only 15 languages have a sex of speaker distinction
+table((sos[,3]), sos[,2]) # only 1 languages have a sex of speaker distinction
 
+cat(sum(!as.logical(sos$SoS), na.rm = TRUE)/2, "languages don't have exact matches between parental terms and gender of ego.")
+cat("Some of these are due to more terms being recorded for either mother or father for one gendered speaker. This might not reflect sex-of-speaker distinctions")
+
+# Langauges with sex of speaker distinctions
 sos_gc = sos %>% 
   filter(SoS == FALSE) %>% 
   select(Glottocode) %>% 
   distinct()
-
 
 ## -- Create data to code -- ## 
 # we need three data columns:

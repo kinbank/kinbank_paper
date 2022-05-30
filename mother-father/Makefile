@@ -1,4 +1,4 @@
-KINBANK_REPO=https://github.com/SimonGreenhill/kinbank.git
+KINBANK_REPO=https://github.com/kinbank/kinbank.git
 KINBANK=../kinbank
 
 clean:
@@ -14,16 +14,20 @@ $(KINBANK):
 	git clone $(KINBANK_REPO) ../kinbank
 
 collect_data: $(KINBANK)
-	cd $(KINBANK) && git checkout 18ecc23fdb80ac1681904c87fc1995497cb956e8$
+	cd $(KINBANK) && git checkout 45ae459b755174781b133844cde96da995269e50
+	
+# 18ecc23fdb80ac1681904c87fc1995497cb956e8$
 	
 clean_data: 
 	mkdir processed_data/
 	RScript processing/get-data.R
 	@echo After processing kinbank data, it is manually coded for the first syllable sound. 
-	RScript processing/clean_glottotrees.R
-	RScript processing/prune_jager.R
+	RScript processing/prune_jaeger.R
 	
 analyse:
 	mkdir results/
 	mkdir figures/
-	Rscript brms_models.R
+	Rscript brms_models_jaeger.R
+	@echo Calculate interreliability statistics
+	RScript get_interreliabilitydata.R
+	RScript irr.R

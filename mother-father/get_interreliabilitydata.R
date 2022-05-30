@@ -6,9 +6,9 @@ library(stringr)
 
 set.seed(2021)
 
-data = read_xlsx('mother-father/data/coded-data.xlsx', sheet = "data")
-vowels = read_xlsx('mother-father/data/coded-data.xlsx', sheet = "vowels")
-consonants = read_xlsx('mother-father/data/coded-data.xlsx', sheet = "consonant")
+data = read_xlsx('./data/coded-data.xlsx', sheet = "data")
+vowels = read_xlsx('./data/coded-data.xlsx', sheet = "vowels")
+consonants = read_xlsx('./data/coded-data.xlsx', sheet = "consonant")
 
 # SP has already coded all 3,534 rows
 # Two additional coders code 120 rows each with 60 kinterms overlapping
@@ -53,7 +53,7 @@ new_id = data.frame(ID = existing_id,
 coder_1 = left_join(coder_1, new_id)
 coder_2 = left_join(coder_2, new_id)
 
-write.csv(new_id, "mother-father/processed_data/hidden_ids.csv")
+write.csv(new_id, "./processed_data/hidden_ids.csv")
 
 # save coding sheets
 coder_1 = coder_1 %>% 
@@ -66,7 +66,7 @@ coder_1$vowel = ""
 assert_that(nrow(coder_1) == 120)
 
 c1 = list(kinterms = coder_1, consonants = consonants, vowels = vowels)
-write.xlsx(c1, file = "mother-father/processed_data/coder_1.xlsx")
+write.xlsx(c1, file = "./processed_data/coder_1.xlsx")
 
 coder_2$ID2 = str_extract(coder_2$ID, ".+?(?=[a-z]{4}[0-9]{4})") %>% 
   str_remove("[vp]_")
@@ -82,4 +82,4 @@ assert_that(nrow(coder_2) == 120)
 assert_that(!all(coder_2$new_id == coder_1$new_id))
 
 c2 = list(kinterms = coder_2, consonants = consonants, vowels = vowels)
-write.xlsx(c2, file = "mother-father/processed_data/coder_2.xlsx")
+write.xlsx(c2, file = "./processed_data/coder_2.xlsx")

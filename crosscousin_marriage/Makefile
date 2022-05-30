@@ -17,13 +17,13 @@ collect_data: $(KINBANK)
 	cd $(KINBANK) && git checkout 18ecc23fdb80ac1681904c87fc1995497cb956e8$
 
 clean_data:
-	mkdir processed_data/
+	mkdir -p processed_data/
 	Rscript processing/get-data.R
 	@echo After creating bantu data, it is manually coded for bifurcate merging terminology
 	Rscript processing/create_bt_data.R
 	
 analyse:
-	mkdir results/
+	mkdir -p results/
 	@echo First, get_tags creates an output which reconstructs the ancestral state at all internal nodes of the phylogeny. This is copied into the BT analysis file manually
 	RScript analysis/get_tags.R
 	analysis/all.sh

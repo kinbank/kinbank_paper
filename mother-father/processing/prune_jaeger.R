@@ -1,7 +1,9 @@
-library(ape)
-library(phytools)
-library(readxl)
-library(stringr)
+suppressPackageStartupMessages({
+  library(ape)
+  library(phytools)
+  library(readxl)
+  library(stringr)
+})
 
 #### Inputs ####
 taxa_pairing = read.csv('data/taxa.csv')

@@ -1,19 +1,20 @@
 # new models
-library(brms)
-library(ape)
-library(readxl)
-library(dplyr)
-library(bayesplot)
-library(ggplot2)
-library(beepr)
-library(stringr)
-library(bayestestR)
-library(parallel)
-library(rstan)
+suppressPackageStartupMessages({
+  library(brms)
+  library(ape)
+  library(readxl)
+  library(dplyr)
+  library(bayesplot)
+  library(ggplot2)
+  library(beepr)
+  library(stringr)
+  library(bayestestR)
+  library(parallel)
+  library(rstan)  
+  library(assertthat)
+})
 
-#setwd("mother-father/")
 # -- Get Data -- #
-# 3068
 df = read_xlsx('data/coded-data.xlsx', sheet= 1)
 super_tree = read.tree('processed_data/jaeger_pruned.tree')
 
@@ -29,15 +30,14 @@ df = df %>%
   slice(1) %>% 
   ungroup()
 
-## WHILE STILL CODING
+# Remove cases where coders were unclear
 df = df %>% 
   dplyr::filter(!is.na(consonant)) %>% 
   dplyr::filter(!is.na(vowel)) %>% 
   dplyr::filter(vowel != "?")
-nrow(df)
 
 
-# data checks
+# Make sure coders only used allowable categories
 all(df$vowel %in% c("i", "e", "E", "3", "a", "u", "o", "!"))
 all(df$consonant %in% c("p", "b", "m", "f", "v", "8" ,"4", "t", "d","s","z","c","n","S","Z","C","j","T","5","k","g","x","N","q","G","X","7","h","l","L","w","y","r","!"))
 
@@ -52,15 +52,15 @@ data_gc = unique(df$Glottocode)
 data_gc = data_gc[data_gc %in% super_tree$tip.label]
 super_tree = keep.tip(super_tree, data_gc)
 # cov phylo matrix
-A <- ape::vcv.phylo(super_tree)
+A = ape::vcv.phylo(super_tree)
 
 # subset data to tree
 idx = df$Glottocode %in% super_tree$tip.label
 df = df[idx,]
 
 # check all languages are included
-all(super_tree$tip.label %in% data_gc)
-all(data_gc %in% super_tree$tip.label)
+x = assert_that(all(super_tree$tip.label %in% data_gc))
+x = assert_that(all(data_gc %in% super_tree$tip.label))
 
 # -- Models -- #
 
@@ -69,7 +69,7 @@ iter = 5000
 warmup = 2000
 chains = 4
 mtd = 15 # max tree depth
-## speed ups?
+## Use BRMS speed ups
 ncores = parallel::detectCores()
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
@@ -101,20 +101,6 @@ model_mother <- brm(
   sample_prior = TRUE, chains = chains, control=list(adapt_delta=0.99, max_treedepth = mtd),
   iter = iter, warmup = warmup, cores = ncores, file = "results/mother_withphylo_jaegersubset.rds"
 )
-beepr::beep(4)
-
-# model_father <- brm(
-#   data = df, family = bernoulli,
-#   father ~ vowel + consonant + (1|gr(super_tree, cov = A)) + (1|Glottocode), 
-#   data2 = list(A = A),
-#   prior = c(
-#     prior(normal(0,10), "b"),
-#     prior(student_t(3,0,20), "sd")
-#   ),
-#   sample_prior = TRUE, chains = 1, control=list(adapt_delta=0.99, max_treedepth = mtd),
-#   iter = 4000, warmup = 1000, file = "results/father_withphylo.rds"
-# )
-# beepr::beep(4)
 
 # -- Get posterior -- #
 params = parnames(model_mother)[str_detect(parnames(model_mother), "b_")]

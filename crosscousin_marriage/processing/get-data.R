@@ -42,8 +42,8 @@ assert_that(sum(taxa$in_kinbank & !is.na(taxa$EA023)) == 74, msg = "Data in tree
 
 ## Get the kintypes for Bi-furcate merging 
 kinbank_id = taxa$glottocode[taxa$in_kinbank == 1 & !is.na(taxa$EA023)]
-parameters = c("mMeB", "mMyB", "mFeB", "mFyB", "mF", 
-               "mMeZ", "mMyZ", "mFeZ", "mFyZ", "mM")
+parameters = c("mF", "mFeB", "mFyB", "mMeB", "mMyB", "mWF",
+              "mM", "mFeZ", "mFyZ", "mMeZ", "mMyZ", "mWM")
 forms = read.csv('../kinbank/kinbank/cldf/forms.csv') %>% 
   left_join(., languages, c("Language_ID" = "ID")) %>% 
   filter(Parameter_ID %in% parameters)
