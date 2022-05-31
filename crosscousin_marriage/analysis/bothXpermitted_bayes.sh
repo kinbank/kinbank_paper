@@ -6,7 +6,9 @@ tree="./processed_data/$hypothesis.bttrees"
 data="./processed_data/$hypothesis.btdata"
 
 iterations=10010000
+burnin=1000000
 sample=1000
+
 chain=1
 
 HOME=$(pwd)
@@ -20,7 +22,7 @@ BayesTraitsV3 $tree $data << ANSWERS
 ScaleTrees
 priorAll exp 10
 Stones 100 1000
-Burnin 10000
+Burnin $burnin
 Iterations $iterations
 Sample $sample
 AddTag Node60 A22_Bakweri A32C_Batanga 
@@ -144,7 +146,7 @@ BayesTraitsV3 $tree $data  << ANSWERS
 ScaleTrees
 priorAll exp 10
 Stones 100 1000
-Burnin 10000
+Burnin $burnin
 Iterations $iterations
 Sample $sample
 AddTag Node60 A22_Bakweri A32C_Batanga 

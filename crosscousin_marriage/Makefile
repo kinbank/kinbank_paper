@@ -14,7 +14,7 @@ $(KINBANK):
 	git clone $(KINBANK_REPO) ../kinbank
 
 collect_data: $(KINBANK)
-	cd $(KINBANK) && git checkout 18ecc23fdb80ac1681904c87fc1995497cb956e8$
+	cd $(KINBANK) && git checkout 45ae459b755174781b133844cde96da995269e50
 
 clean_data:
 	mkdir -p processed_data/
@@ -28,3 +28,4 @@ analyse:
 	RScript analysis/get_tags.R
 	analysis/all.sh
 	analysis/make_tree.R
+	RScript analysis/review_results.R

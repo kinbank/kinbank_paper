@@ -7,6 +7,7 @@ data="./processed_data/$hypothesis.btdata"
 
 iterations=10010000
 sample=1000
+burnin=1000000
 chain=1
 
 HOME=$(pwd)
@@ -19,7 +20,7 @@ Pis Emp
 ScaleTrees
 priorAll exp 10
 Stones 100 1000
-Burnin 10000
+Burnin $burnin
 Iterations $iterations
 Sample $sample
 LogFile ./results/$hypothesis-indep-$chain
@@ -34,7 +35,7 @@ Pis Emp
 ScaleTrees
 priorAll exp 10
 Stones 100 1000
-Burnin 10000
+Burnin $burnin
 Iterations $iterations
 Sample $sample
 LogFile ./results/$hypothesis-dep-$chain

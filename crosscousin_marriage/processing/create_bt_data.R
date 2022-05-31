@@ -1,11 +1,13 @@
-library(readxl)
-library(ape)
-library(bayestraitr)
-library(stringr)
-library(geiger)
-library(dplyr)
-library(assertthat)
-
+suppressPackageStartupMessages({
+  library(readxl)
+  library(ape)
+  library(bayestraitr)
+  library(stringr)
+  library(geiger)
+  library(dplyr)
+  library(assertthat)
+})
+  
 # Get Data ----
 
 ## NOTE: I manually determined whether there was merging in kin types
@@ -33,7 +35,8 @@ d = read_xlsx('data/clean_data.xlsx', sheet = 1, skip = 1) %>%
 rownames(d) = d$taxon
 
 # If any first cousin cross-cousin marriage 1 else 0
-d$ccm = ifelse(d$EA023 <= 6 | d$EA023 == 9, 1, 0)
+cousin_marriage_code = c(1,6,9)
+d$ccm = ifelse(d$EA023 %in% cousin_marriage_code, 1, 0)
 
 # Linguistic variables
 ## We have three variables: 

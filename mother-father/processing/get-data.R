@@ -2,7 +2,6 @@ suppressPackageStartupMessages({
   library(dplyr)
 })
 
-
 forms = read.csv('../kinbank/kinbank/cldf/forms.csv')
 languages = read.csv('../kinbank/kinbank/cldf/languages.csv')
 
@@ -44,7 +43,6 @@ for(i in 1:length(gc)){
 }
 sos = as.data.frame(sos)
 colnames(sos) = c("Glottocode", "Kintype", "SoS")
-table((sos[,3]), sos[,2]) # only 1 languages have a sex of speaker distinction
 
 cat(sum(!as.logical(sos$SoS), na.rm = TRUE)/2, "languages don't have exact matches between parental terms and gender of ego.")
 cat("Some of these are due to more terms being recorded for either mother or father for one gendered speaker. This might not reflect sex-of-speaker distinctions")
