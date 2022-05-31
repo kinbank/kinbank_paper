@@ -38,8 +38,9 @@ df = df %>%
 
 
 # Make sure coders only used allowable categories
-all(df$vowel %in% c("i", "e", "E", "3", "a", "u", "o", "!"))
-all(df$consonant %in% c("p", "b", "m", "f", "v", "8" ,"4", "t", "d","s","z","c","n","S","Z","C","j","T","5","k","g","x","N","q","G","X","7","h","l","L","w","y","r","!"))
+x = assert_that(
+  all(df$vowel %in% c("i", "e", "E", "3", "a", "u", "o", "!")))
+x = assert_that(all(df$consonant %in% c("p", "b", "m", "f", "v", "8" ,"4", "t", "d","s","z","c","n","S","Z","C","j","T","5","k","g","x","N","q","G","X","7","h","l","L","w","y","r","!")))
 
 # get response
 df$mother = ifelse(df$mf == "M", 1, 0)
@@ -98,15 +99,22 @@ model_mother <- brm(
     prior(normal(0,10), "b"),
     prior(student_t(3,0,20), "sd")
     ),
-  sample_prior = TRUE, chains = chains, control=list(adapt_delta=0.99, max_treedepth = mtd),
-  iter = iter, warmup = warmup, cores = ncores, file = "results/mother_withphylo_jaegersubset.rds"
+  sample_prior = FALSE, 
+  chains = chains, 
+  control=list(adapt_delta=0.99, 
+               max_treedepth = mtd),
+  iter = iter, 
+  warmup = warmup, 
+  cores = ncores, 
+  file = "results/mother_withphylo_jaegersubset.rds"
 )
 
 # -- Get posterior -- #
-params = parnames(model_mother)[str_detect(parnames(model_mother), "b_")]
+params = variables(model_mother)[str_detect(variables(model_mother), "b_")]
 
 # - plain model - #
-no_phylo = posterior_samples(model_plain, pars = params)
+no_phylo2 = posterior_samples(model_plain, pars = params)
+no_phylo = as_draws(model_plain, variable = params)
 # get combinations of interest
 np_ofinterest = data.frame(
   ma = no_phylo$b_Intercept + no_phylo$b_consonantm + no_phylo$b_vowela,
@@ -118,7 +126,7 @@ np_ofinterest = data.frame(
 np_ofinterest = apply(np_ofinterest, 2, inv_logit_scaled)
 
 # - mother & phylogenetically controlled model - #
-mother = posterior_samples(model_mother, pars = params)
+mother = as_draws_df(model_mother, variables = params)
 # get combinations of interest
 m_ofinterest = data.frame(
   ma = mother$b_Intercept + mother$b_consonantm + mother$b_vowela,
@@ -137,11 +145,6 @@ my_scheme <- c("#FBBE4B", "#ED5C4D",
                    "#273253", "#ED8F57")
 color_scheme_set(my_scheme)
 
-# mcmc_areas(np_ofinterest,
-#            prob = 0.8)
-# 
-# mcmc_trace(mother, pars = params)
-
 # Summary statistics
 plot_hdi = apply(m_ofinterest,2, function(x){
   interval = hdi(x)
@@ -151,9 +154,12 @@ plot_hdi = apply(m_ofinterest,2, function(x){
 y_points = 5:1 + 0.8
 x_points = apply(m_ofinterest, 2, median) + .11
 
-grDevices::cairo_pdf('figures/prob_mother_jaeger.pdf', width = 10, height = 5.6)
+grDevices::cairo_pdf('figures/prob_mother_jaeger.pdf',
+                     width = 7, 
+                     height = 4)
 mcmc_areas_ridges(m_ofinterest,
-           prob = 0.89) + ggtitle("Probability of sounds referring to mother",
+           prob = 0.89) + 
+  ggtitle("Probability of sounds referring to mother",
           "Posterior distribution with 89% intervals") +
   vline_at(0.5, col = "#ED5C4D", lty = "dashed") +
   xlim(c(0, 1)) + 
@@ -162,13 +168,33 @@ mcmc_areas_ridges(m_ofinterest,
                             "na" = "na",
                             "pa" = "pa",
                             "ta" = "ta"
-                            ), limits = rev(c("ma", "nga", "na", "pa", "ta"))) +
-  annotate(geom = "text", x=x_points[1], y=y_points[1], label=plot_hdi[1], family = "serif", fontface = "plain") +
-  annotate(geom = "text", x=x_points[2], y=y_points[2], label=plot_hdi[2], family = "serif", fontface = "plain") +
-  annotate(geom = "text", x=x_points[3], y=y_points[3], label=plot_hdi[3], family = "serif", fontface = "plain") +
-  annotate(geom = "text", x=x_points[4], y=y_points[4], label=plot_hdi[4], family = "serif", fontface = "plain") +
-  annotate(geom = "text", x=x_points[5], y=y_points[5], label=plot_hdi[5], family = "serif", fontface = "plain") + 
+                            ), 
+                   limits = rev(c("ma", "nga", "na", "pa", "ta"))) +
+  annotate(geom = "text", 
+           x=x_points[1], y=y_points[1], 
+           label=plot_hdi[1], 
+           family = "sans", 
+           fontface = "plain") +
+  annotate(geom = "text", 
+           x=x_points[2], y=y_points[2], 
+           label=plot_hdi[2], 
+           family = "sans", 
+           fontface = "plain") +
+  annotate(geom = "text", x=x_points[3], y=y_points[3], 
+           label=plot_hdi[3], 
+           family = "sans", 
+           fontface = "plain") +
+  annotate(geom = "text", 
+           x=x_points[4], y=y_points[4], 
+           label=plot_hdi[4], 
+           family = "sans", 
+           fontface = "plain") +
+  annotate(geom = "text", 
+           x=x_points[5], y=y_points[5], 
+           label=plot_hdi[5], 
+           family = "sans", 
+           fontface = "plain") + 
   annotate(geom = "text", label = "Mother", x = 0.95, y = 0.65, size = 5) +
   annotate(geom = "text", label = "Father", x = 0.05, y = 0.65, size = 5) + 
-  theme(text = element_text(size=20))
+  theme(text = element_text(size=10, family="sans"))
 dev.off()
